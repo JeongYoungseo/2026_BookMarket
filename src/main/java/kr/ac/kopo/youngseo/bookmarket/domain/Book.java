@@ -12,8 +12,8 @@ import java.math.BigDecimal;
 @Getter
 public class Book {
     private String bookId; //도서 ID
-    private String bookName; // 도서 이름
-    private BigDecimal uniPrice; // 가격
+    private String name; // 도서 이름
+    private BigDecimal unitPrice; // 가격
     private String author; // 저자
     private String description; // 설명
     private String publisher; // 출판사
