@@ -1,17 +1,22 @@
 package kr.ac.kopo.youngseo.bookmarket.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kr.ac.kopo.youngseo.bookmarket.domain.Book;
 import kr.ac.kopo.youngseo.bookmarket.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +29,8 @@ public class BookController {
 
     @Value("${file.uploadDir}")
     String fileDir;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @RequestMapping(method = RequestMethod.GET)
     public String requestBookList(Model model){
@@ -81,7 +88,23 @@ public class BookController {
         model.addAttribute("addTitle", "신규 도서 등록");
     }
 
+    @GetMapping("/download")
+    public void downloadBookImage(@RequestParam("file") String paramKey, HttpServletResponse response){
+        File imgFile = new File(fileDir + paramKey);
+        response.setContentType("application/download");
+        response.setContentLength((int)imgFile.length());
+        response.setHeader("Content-Disposition", "attachment;filename=\"" +paramKey + "\"");
 
+        try {
+            OutputStream fileOut = response.getOutputStream();
+            FileInputStream fileIn = new FileInputStream(imgFile);
+            FileCopyUtils.copy(fileIn, fileOut);
+            fileIn.close();
+            fileOut.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @GetMapping("/all")
     public ModelAndView requestAllBooks(){
