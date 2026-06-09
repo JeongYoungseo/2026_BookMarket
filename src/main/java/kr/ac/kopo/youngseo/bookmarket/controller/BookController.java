@@ -14,6 +14,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import kr.ac.kopo.youngseo.bookmarket.validator.BookValidator;
+import kr.ac.kopo.youngseo.bookmarket.validator.UnitsInStockValidator;
+import org.springframework.web.bind.WebDataBinder;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +31,7 @@ import java.util.Set;
 public class BookController {
     @Autowired
     private BookService bookService;
+
 
     @Value("${file.uploadDir}")
     String fileDir;
