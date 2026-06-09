@@ -32,11 +32,14 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+//    @Autowired
+//    private UnitsInStockValidator unitsInStockValidator;
+
+    @Autowired
+    private BookValidator bookValidator;
 
     @Value("${file.uploadDir}")
     String fileDir;
-    @Autowired
-    private ResourceLoader resourceLoader;
 
     @RequestMapping(method = RequestMethod.GET)
     public String requestBookList(Model model){
@@ -74,7 +77,7 @@ public class BookController {
 
     @PostMapping("/add")
     public String submitAddNewBook(@Valid @ModelAttribute Book book, BindingResult bindingResult){
-        if(bindingResult.hasErrors())
+        if (bindingResult.hasErrors())
             return "addBook";
 
         MultipartFile bookImage = book.getBookImage();
@@ -98,22 +101,30 @@ public class BookController {
         model.addAttribute("addTitle", "신규 도서 등록");
     }
 
+
     @GetMapping("/download")
     public void downloadBookImage(@RequestParam("file") String paramKey, HttpServletResponse response){
         File imgFile = new File(fileDir + paramKey);
+
         response.setContentType("application/download");
         response.setContentLength((int)imgFile.length());
-        response.setHeader("Content-Disposition", "attachment;filename=\"" +paramKey + "\"");
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + paramKey + "\"");
 
         try {
-            OutputStream fileOut = response.getOutputStream();
+            OutputStream out = response.getOutputStream();
             FileInputStream fileIn = new FileInputStream(imgFile);
-            FileCopyUtils.copy(fileIn, fileOut);
+            FileCopyUtils.copy(fileIn, out);
             fileIn.close();
-            fileOut.close();
+            out.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder){
+        binder.setValidator(bookValidator);
     }
 
     @GetMapping("/all")
