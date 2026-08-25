@@ -1,6 +1,7 @@
 package kr.ac.kopo.youngseo.bookmarket.repository;
 
 import kr.ac.kopo.youngseo.bookmarket.domain.Book;
+import kr.ac.kopo.youngseo.bookmarket.exception.BookIdException;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -76,8 +77,12 @@ public class BookRepositoryImpl implements BookRepository {
             }
         }
 
-        if (book == null){
-            throw new IllegalArgumentException("도서ID가 " + bookId + "인 도서는 찾을 수가 없습니다.");
+        //if (book == null){
+            //throw new IllegalArgumentException("도서ID가 " + bookId + "인 도서는 찾을 수가 없습니다.");
+        //}
+
+        if(book ==null){
+            throw new BookIdException(bookId);
         }
 
         return book;
